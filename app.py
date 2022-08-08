@@ -1,19 +1,14 @@
 import tweepy
 import json
-import time
-import sys
 from decouple import config
+import requests
 
-# CONSUMER_KEY = config('CONSUMER_KEY')
-# CONSUMER_SECRET = config('CONSUMER_KEY_SECRET')
-# ACCESS_TOKEN = config('ACCESS_TOKEN')
-# ACCESS_TOKEN_SECRET = config('ACCESS_TOKEN_SECRET')
 BEARER_TOKEN = config('BEARER_TOKEN')
 
 # ID of @disastersbot account
 BOT_ID = 1553394058542084096
-# Time between retweeting a tweet again. Set to 120 in accordance with the twitter api requests limits
-SLEEP_TIME = 120
+# API endpoint of the Django app
+API_ENDPOINT = 'http://127.0.0.1:8000/api/add-tweet/'
 
 # Twitter authentication
 client = tweepy.Client(BEARER_TOKEN)
@@ -32,13 +27,54 @@ class StreamListener(tweepy.StreamingClient):
 
 
     def on_data(self, raw_data):
-        print(f"Data recieved {raw_data} \n")
         # Process the raw data by decoding from bytes to string and then de-serializing the string to dict
-        data = raw_data.decode('utf-8')
+        data = raw_data.decode("utf-8")
         data = json.loads(data)
-        print(f'Processed data: {data} \n')
-        text = data['data']['text']
-        print(f'Data text: {text} \n')
+        # print(f'Processed data: {data} \n')
+
+        # Extract different data types from the received tweet object
+        text = data["data"]["text"]
+        mediaType = data["includes"]["media"][0]["type"]
+
+        # Extract the media from tweet object baseed on the media type
+        if mediaType == 'photo':
+            media = data["includes"]["media"][0]["url"]
+            
+        elif mediaType == 'video' or mediaType == 'animated_gif':
+            contentType = data['includes']['media'][0]['variants'][0]['content_type']
+            if contentType == 'video/mp4':
+                media = data["includes"]["media"][0]["variants"][0]["url"]
+            else:
+                media = data["includes"]["media"][0]["variants"][1]["url"]
+            
+        else:
+            media = None
+            print('⚠️ ERROR: Unidentified media type:' + mediaType)
+
+        # Extract username and postID from tweet, and then generate the tweet link using that.
+        username = data['includes']['users'][0]['username']
+        postID = data['data']['id']
+        link = f"https://twitter.com/{username}/status/{postID}"
+
+        # Payload to send through API
+        api_data = {
+            'text' : text,
+            'media' : media,
+            'username' : username,
+            'link' : link
+        }
+
+        # Make a POST request to the API to add the tweet to database
+        try:
+            api_call = requests.post(url=API_ENDPOINT, json=api_data)
+            print('API response: ', api_call.text, '\n')
+        except:
+            print('🔴 ERROR: Unable to make a POST request')
+        
+        # print(f'Data text: {text} \n')
+        # print(f'Data media: {media} \n')
+        # print(f'Data username: {username} \n')
+        # print(f'Data link: {link} \n')
 
         
     def on_errors(self, errors):
@@ -67,4 +103,4 @@ print('ACTIVE FILTERS:', rules)
 
 
 # Look for tweets with the below mentioned keywords only
-stream.filter(expansions="author_id")
+stream.filter(expansions=["author_id","attachments.media_keys"], media_fields=["url","variants"])
