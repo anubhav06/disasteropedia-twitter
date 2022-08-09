@@ -34,6 +34,7 @@ class StreamListener(tweepy.StreamingClient):
 
         # Extract different data types from the received tweet object
         text = data["data"]["text"]
+        created_at = data['data']['created_at']
         mediaType = data["includes"]["media"][0]["type"]
 
         # Extract the media from tweet object baseed on the media type
@@ -59,7 +60,9 @@ class StreamListener(tweepy.StreamingClient):
         # Payload to send through API
         api_data = {
             'text' : text,
+            'created_at' : created_at,
             'media' : media,
+            'mediaType' : mediaType,
             'username' : username,
             'link' : link
         }
@@ -92,10 +95,10 @@ stream = StreamListener(
 )
 
 
-# stream.delete_rules([1555245925081448448])    
-stream.add_rules(add=tweepy.StreamRule(value='has:media -is:retweet -is:reply (bio_location:india) \
+# stream.delete_rules([1555246169412218880])    
+stream.add_rules(add=tweepy.StreamRule(value='has:media -is:retweet -is:reply -is:quote (bio_location:india) \
 (flood OR floods OR wildfire OR wildfires OR earthquake OR earthquakes OR tornado OR tornados OR \
-storm OR hurricane OR drought OR tsunami OR landslide OR landslides)', tag='temporary custom rule'))
+storm OR hurricane OR drought OR tsunami OR landslide OR landslides)', tag='checks for disaster'))
 stream.add_rules(add=tweepy.StreamRule(value='has:media (bio_location:india OR place_country:IN) (flood OR wildfire OR eartquake OR tornado OR storm OR hurricane OR drought OR tsunami OR landslide)', tag='location:IN has:info'))
 
 rules = stream.get_rules()
@@ -103,4 +106,4 @@ print('ACTIVE FILTERS:', rules)
 
 
 # Look for tweets with the below mentioned keywords only
-stream.filter(expansions=["author_id","attachments.media_keys"], media_fields=["url","variants"])
+stream.filter(expansions=["author_id","attachments.media_keys"], media_fields=["url","variants"], tweet_fields=["created_at"])
