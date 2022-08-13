@@ -95,11 +95,14 @@ stream = StreamListener(
 )
 
 
-# stream.delete_rules([1555246169412218880])    
-stream.add_rules(add=tweepy.StreamRule(value='has:media -is:retweet -is:reply -is:quote (bio_location:india) \
-(flood OR floods OR wildfire OR wildfires OR earthquake OR earthquakes OR tornado OR tornados OR \
-storm OR hurricane OR drought OR tsunami OR landslide OR landslides)', tag='checks for disaster'))
-stream.add_rules(add=tweepy.StreamRule(value='has:media (bio_location:india OR place_country:IN) (flood OR wildfire OR eartquake OR tornado OR storm OR hurricane OR drought OR tsunami OR landslide)', tag='location:IN has:info'))
+# stream.delete_rules([1558483815256838144])    
+# stream.add_rules(add=tweepy.StreamRule(value='has:media -is:retweet -is:reply -is:quote (bio_location:india) \
+# (flood OR floods OR wildfire OR wildfires OR earthquake OR earthquakes OR tornado OR tornados OR \
+# storm OR hurricane OR drought OR tsunami OR landslide OR landslides)', tag='checks for disaster'))
+stream.add_rules(add=tweepy.StreamRule(value='has:media -is:retweet -is:reply -is:quote \
+(bio_location:india OR place_country:IN) \
+(flood OR floods OR flooded OR flooding OR wildfire OR wildfires OR eartquake OR earthquakes OR tornado OR tornadoes OR tornados \
+OR hurricane OR hurricanes OR drought OR droughts OR tsunami OR tsunamis OR landslide OR landslides)', tag='has:location has:keywords'))
 
 rules = stream.get_rules()
 print('ACTIVE FILTERS:', rules)
