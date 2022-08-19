@@ -8,7 +8,7 @@ BEARER_TOKEN = config('BEARER_TOKEN')
 # ID of @disastersbot account
 BOT_ID = 1553394058542084096
 # API endpoint of the Django app
-API_ENDPOINT = 'http://127.0.0.1:8000/api/add-tweet/'
+API_ENDPOINT = 'https://disasteropedia.herokuapp.com/api/add-tweet/'
 
 # Twitter authentication
 client = tweepy.Client(BEARER_TOKEN)
