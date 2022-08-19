@@ -74,11 +74,6 @@ class StreamListener(tweepy.StreamingClient):
         except:
             print('🔴 ERROR: Unable to make a POST request')
         
-        # print(f'Data text: {text} \n')
-        # print(f'Data media: {media} \n')
-        # print(f'Data username: {username} \n')
-        # print(f'Data link: {link} \n')
-
         
     def on_errors(self, errors):
         print(f"Error while retweeting: {errors}")
@@ -95,15 +90,12 @@ stream = StreamListener(
 )
 
 
-# stream.delete_rules([1558760283317108738])    
-# stream.add_rules(add=tweepy.StreamRule(value='has:media -is:retweet -is:reply -is:quote (bio_location:india) \
-# (flood OR floods OR wildfire OR wildfires OR earthquake OR earthquakes OR tornado OR tornados OR \
-# storm OR hurricane OR drought OR tsunami OR landslide OR landslides)', tag='checks for disaster'))
+# stream.delete_rules([1560480934230904833])    
 stream.add_rules(add=tweepy.StreamRule(value='has:media -is:retweet -is:reply -is:quote \
 (bio_location:india OR place_country:IN) \
 (flood OR floods OR flooded OR flooding OR wildfire OR wildfires OR eartquake OR earthquakes OR tornado OR tornadoes OR tornados \
 OR hurricane OR hurricanes OR drought OR droughts OR tsunami OR tsunamis OR landslide OR landslides) \
--crypto -balochistan -pakistan -possible', tag='has:location has:keywords'))
+-crypto -balochistan -pakistan -possible -BJP -congress -donate -PVR -cinema', tag='has:location has:keywords'))
 
 rules = stream.get_rules()
 print('ACTIVE FILTERS:', rules)
