@@ -11,7 +11,7 @@ Twitter API service for the [disasteropedia](https://github.com/anubhav06/disast
 <hr/>
 
 ## Documentation 📖
-In progress. Will be added soon.
+[In progress.](https://github.com/anubhav06/disasteropedia-twitter/wiki) Will be added soon.
 
 ## LICENSE ⚖️
 disasteropedia is licensed under the Apache License 2.0
